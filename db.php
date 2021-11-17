@@ -103,6 +103,17 @@ class plugins_addonproduct_db
                     $sql = 'SELECT * FROM `mc_addon_product_content` 
                         WHERE `id_adp` = :id_adp AND `id_lang` = :id_lang';
                     break;
+                case 'paramvalue':
+                    $sql = 'SELECT p.id_adp,p.price_adp,c.name_adp
+							FROM mc_addon_product AS p
+							JOIN mc_addon_product_content AS c ON(c.id_adp = p.id_adp)
+							JOIN mc_lang AS lang ON(c.id_lang = lang.id_lang)
+                            WHERE p.id_adp = :id_adp';
+                    break;
+                case 'cartpay':
+                    $sql = 'SELECT * 
+                    FROM `mc_cartpay_addon_product` WHERE id_items = :id AND id_adp = :id_adp';
+                    break;
             }
 
             return $sql ? component_routing_db::layer()->fetch($sql, $params) : null;
@@ -127,6 +138,10 @@ class plugins_addonproduct_db
             case 'contentPage':
                 $sql = 'INSERT INTO mc_addon_product_content (id_adp, id_lang, name_adp) 
 				  		VALUES (:id_adp, :id_lang, :name_adp)';
+                break;
+            case 'cartpay':
+                $sql = 'INSERT INTO mc_cartpay_addon_product (id_adp, id_items, content_adp, infos_adp)
+				  		VALUES (:id_adp, :id_items, :content_adp, :infos_adp)';
                 break;
         }
 

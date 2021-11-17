@@ -13,7 +13,7 @@ class plugins_addonproduct_public extends plugins_addonproduct_db
      * @var int $id
      */
     protected $id, $cart, $settingComp,$settings;
-    public $contentData;
+    public $contentData,$content;
 
     /**
      * frontend_controller_home constructor.
@@ -29,6 +29,16 @@ class plugins_addonproduct_public extends plugins_addonproduct_db
 
         if (http_request::isGet('id')) $this->id = $formClean->numeric($_GET['id']);
         if (http_request::isPost('contentData')) $this->contentData = $formClean->arrayClean($_POST['contentData']);
+        /*if (http_request::isPost('addonContent')) {
+            $array = $_POST['addonContent'];
+            foreach($array as $key => $arr) {
+                foreach($arr as $k => $v) {
+                    $array[$key][$k] = ($k == 'content_adp' OR $k == 'infos_adp') ? $formClean->cleanQuote($v) : $formClean->simpleClean($v);
+                }
+            }
+            $this->content = $array;
+        }*/
+        if (http_request::isPost('addonContent')) $this->content = $formClean->arrayClean($_POST['addonContent']);
     }
 
     /**
@@ -80,7 +90,7 @@ class plugins_addonproduct_public extends plugins_addonproduct_db
      * @param $params
      * @return mixed
      */
-    public function add_unit_price($params){
+    public function impact_unit_price($params){
         // Retourne le prix venant de l'attribut ou venant du produit si aucun attribut
         $id_adp = $params['param']['addonproduct'];
         if(isset($id_adp)){
@@ -90,17 +100,48 @@ class plugins_addonproduct_public extends plugins_addonproduct_db
         }
     }
     /**
+     * Update data
+     * @param $data
+     * @throws Exception
+     */
+    private function add($data)
+    {
+        switch ($data['type']) {
+            case 'cartpay':
+                parent::insert(
+                    array(
+                        'context' => $data['context'],
+                        'type' => $data['type']
+                    ),
+                    $data['data']
+                );
+                break;
+        }
+    }
+    /**
      * @param $params
      * @return string
      */
     public function impact_param_value($params){
         //print_r($params);
-        if($params['params'] == "1"){
-            $newData = 'ruban';
-        }elseif($params['params'] == "2"){
-            $newData = 'carte';
+        $id_adp = $params['params'];
+        $addon = $this->getItems('paramvalue', array('id_adp' => $id_adp), 'one', false);
+        $cartpay = $this->getItems('cartpay',
+            array('id' => $params['items'], 'id_adp' => $id_adp), 'one', false);
+        if($cartpay == null){
+            $this->add(
+                array(
+                    'type' => 'cartpay',
+                    'data' => array(
+                        'id_items' => $params['items'],
+                        'id_adp' => $id_adp,
+                        'content_adp' => $this->content['content_adp'],
+                        'infos_adp' => $this->content['infos_adp']
+                    )
+                )
+            );
         }
-        return $newData;
+        return $addon['name_adp'];
     }
     // ---- End Cartpay
 }
