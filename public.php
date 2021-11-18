@@ -19,8 +19,7 @@ class plugins_addonproduct_public extends plugins_addonproduct_db
      * frontend_controller_home constructor.
      * @param stdClass $t
      */
-    public function __construct($t = null)
-    {
+    public function __construct($t = null) {
         $this->template = $t instanceof frontend_model_template ? $t : new frontend_model_template();
         $formClean = new form_inputEscape();
         $this->data = new frontend_model_data($this, $this->template);
@@ -53,6 +52,7 @@ class plugins_addonproduct_public extends plugins_addonproduct_db
     {
         return $this->data->getItems($type, $id, $context, $assign);
     }
+
     /**
      * @param $row
      * @return array
@@ -99,13 +99,13 @@ class plugins_addonproduct_public extends plugins_addonproduct_db
             return $unit_price;
         }
     }
+
     /**
      * Update data
      * @param $data
      * @throws Exception
      */
-    private function add($data)
-    {
+    private function add($data) {
         switch ($data['type']) {
             case 'cartpay':
                 parent::insert(
@@ -118,30 +118,54 @@ class plugins_addonproduct_public extends plugins_addonproduct_db
                 break;
         }
     }
+
     /**
      * @param $params
      * @return string
      */
-    public function impact_param_value($params){
+    public function get_param_value($params) {
         //print_r($params);
         $id_adp = $params['params'];
-        $addon = $this->getItems('paramvalue', array('id_adp' => $id_adp), 'one', false);
-        $cartpay = $this->getItems('cartpay',
-            array('id' => $params['items'], 'id_adp' => $id_adp), 'one', false);
+        $addon = $this->getItems('paramvalue', ['id_adp' => $id_adp], 'one', false);
+        $cartpay = $this->getItems('cartpay', ['id' => $params['items'], 'id_adp' => $id_adp], 'one', false);
         if($cartpay == null){
-            $this->add(
-                array(
-                    'type' => 'cartpay',
-                    'data' => array(
-                        'id_items' => $params['items'],
-                        'id_adp' => $id_adp,
-                        'content_adp' => $this->content['content_adp'],
-                        'infos_adp' => $this->content['infos_adp']
-                    )
-                )
-            );
+            $this->add([
+				'type' => 'cartpay',
+				'data' => [
+					'id_items' => $params['items'],
+					'id_adp' => $id_adp,
+					'content_adp' => $this->content['content_adp'],
+					'infos_adp' => $this->content['infos_adp']
+				]
+			]);
         }
         return $addon['name_adp'];
+    }
+
+    /**
+     * @param array $params
+     * @return array
+     */
+    public function get_param_info(array $params): array {
+        //print_r($params);
+        $id_adp = $params['params'];
+        $cartpay = $this->getItems('cartpay', ['id' => $params['items'], 'id_adp' => $id_adp], 'one', false);
+		$info = [];
+        if(!empty($cartpay)) {
+			$this->template->addConfigFile([component_core_system::basePath().'/plugins/addonproduct/i18n/'], ['public_local_'], false);
+			$this->template->configLoad();
+            $info = [
+				'content' => [
+					'name' => $this->template->getConfigVars('content_adp'),
+					'value' => $cartpay['content_adp']
+				],
+				'infos' => [
+					'name' => $this->template->getConfigVars('infos_adp'),
+					'value' => $cartpay['infos_adp']
+				]
+			];
+        }
+        return $info;
     }
     // ---- End Cartpay
 }

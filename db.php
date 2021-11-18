@@ -111,8 +111,7 @@ class plugins_addonproduct_db
                             WHERE p.id_adp = :id_adp';
                     break;
                 case 'cartpay':
-                    $sql = 'SELECT * 
-                    FROM `mc_cartpay_addon_product` WHERE id_items = :id AND id_adp = :id_adp';
+                    $sql = 'SELECT * FROM `mc_cartpay_addon_product` WHERE id_items = :id AND id_adp = :id_adp';
                     break;
             }
 
