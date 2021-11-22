@@ -79,12 +79,40 @@ class plugins_addonproduct_public extends plugins_addonproduct_db
                 $newarr[] = $this->setItemData($item);
             }
             return $newarr;
-        }else{
+        }
+        else{
             return null;
         }
     }
 
+	/**
+	 * Update data
+	 * @param $data
+	 * @throws Exception
+	 */
+	private function add($data) {
+		switch ($data['type']) {
+			case 'cartpay':
+				parent::insert(
+					array(
+						'context' => $data['context'],
+						'type' => $data['type']
+					),
+					$data['data']
+				);
+				break;
+		}
+	}
+
     // ---- Cartpay
+
+    /**
+     * @return string
+     */
+    public function add_to_cart_params(): string {
+        $this->template->assign('addonproduct',$this->getBuildList());
+        return $this->template->fetch('addonproduct/add-to-cart.tpl');
+    }
 
     /**
      * @param $params
@@ -101,31 +129,12 @@ class plugins_addonproduct_public extends plugins_addonproduct_db
     }
 
     /**
-     * Update data
-     * @param $data
-     * @throws Exception
-     */
-    private function add($data) {
-        switch ($data['type']) {
-            case 'cartpay':
-                parent::insert(
-                    array(
-                        'context' => $data['context'],
-                        'type' => $data['type']
-                    ),
-                    $data['data']
-                );
-                break;
-        }
-    }
-
-    /**
      * @param $params
      * @return string
      */
     public function get_param_value($params) {
         //print_r($params);
-        $id_adp = $params['params'];
+        $id_adp = $params['value']['value'];
         $addon = $this->getItems('paramvalue', ['id_adp' => $id_adp], 'one', false);
         $cartpay = $this->getItems('cartpay', ['id' => $params['items'], 'id_adp' => $id_adp], 'one', false);
         if($cartpay == null){
@@ -134,8 +143,8 @@ class plugins_addonproduct_public extends plugins_addonproduct_db
 				'data' => [
 					'id_items' => $params['items'],
 					'id_adp' => $id_adp,
-					'content_adp' => $this->content['content_adp'],
-					'infos_adp' => $this->content['infos_adp']
+					'content_adp' => $params['value']['content_adp'],
+					'infos_adp' => $params['value']['infos_adp']
 				]
 			]);
         }
@@ -148,7 +157,7 @@ class plugins_addonproduct_public extends plugins_addonproduct_db
      */
     public function get_param_info(array $params): array {
         //print_r($params);
-        $id_adp = $params['params'];
+        $id_adp = $params['value']['value'];
         $cartpay = $this->getItems('cartpay', ['id' => $params['items'], 'id_adp' => $id_adp], 'one', false);
 		$info = [];
         if(!empty($cartpay)) {

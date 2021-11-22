@@ -25,8 +25,6 @@ Ce plugin est utilisé pour compléter d'autres plugins comme "cartpay" ou tout 
         </label>
         {/foreach}
     </div>
-    <textarea name="addonContent[content_adp]"></textarea>
-    <textarea name="addonContent[infos_adp]"></textarea>
 </div>
 {/if}
 ````
