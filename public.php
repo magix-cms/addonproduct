@@ -120,7 +120,7 @@ class plugins_addonproduct_public extends plugins_addonproduct_db
      */
     public function impact_unit_price($params){
         // Retourne le prix venant de l'attribut ou venant du produit si aucun attribut
-        $id_adp = $params['param']['addonproduct'];
+        $id_adp = $params['param']['addonproduct']['value'];
         if(isset($id_adp)){
             $addon = $this->getItems('page',array('id_adp'=> $id_adp), 'one', false);
             $unit_price = $addon['price_adp'];
