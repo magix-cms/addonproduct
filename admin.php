@@ -265,7 +265,7 @@ class plugins_addonproduct_admin extends plugins_addonproduct_db
                 case 'add':
                     if(isset($this->addonData)){
                         $newdata = array();
-                        $newdata['price_adp'] = (!empty($this->addonData['price_adp'])) ? number_format(str_replace(",", ".", $this->addonData['price_adp']), 2, '.', '') : NULL;
+                        $newdata['price_adp'] = (!empty($this->addonData['price_adp'])) ? number_format(str_replace(",", ".", $this->addonData['price_adp']), 4, '.', '') : NULL;
                         // Add data
                         $this->add(array(
                             'type' => 'page',
@@ -285,7 +285,7 @@ class plugins_addonproduct_admin extends plugins_addonproduct_db
                     if(isset($this->addonData)){
                         $newdata = array();
                         $newdata['id_adp'] = $this->id_adp;
-                        $newdata['price_adp'] = (!empty($this->addonData['price_adp'])) ? number_format(str_replace(",", ".", $this->addonData['price_adp']), 2, '.', '') : NULL;
+                        $newdata['price_adp'] = (!empty($this->addonData['price_adp'])) ? number_format(str_replace(",", ".", $this->addonData['price_adp']), 4, '.', '') : NULL;
                         // Add data
                         $this->upd(array(
                             'type' => 'page',

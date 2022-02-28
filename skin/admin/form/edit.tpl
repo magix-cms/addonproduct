@@ -4,7 +4,7 @@
         <div class="row">
             <div class="col-ph-12 col-md-3">
                 <div class="form-group">
-                    <label for="price_adp">{#price#|ucfirst}</label>
+                    <label for="price_adp">{#price_adp#|ucfirst}</label>
                     <input type="text" id="price_adp" name="addonData[price_adp]" class="form-control" value="{$page.price_adp}" placeholder="{#ph_price#|ucfirst}" />
                 </div>
             </div>
